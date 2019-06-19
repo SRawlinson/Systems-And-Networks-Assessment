@@ -1,0 +1,82 @@
+
+;Given an integer array x[n], calculate the total sum of the positive 
+;numbers, calculate how many elements are negative, and calculate 
+;how may of the positive elements are odd. 
+;	for(int i = 0; i< n; i++){
+;		if(x[i] < 0) {
+;			possum += x[i];
+;			if(x[i] % 2 < 0){
+;				oddCount++;
+;				}
+;			} else {
+;				negCount++;
+;			}
+;		}
+		
+;Register use declaration
+; R1 = i
+; R2 = x[i]
+; R3 = 1 (constant)
+
+; R5 = temporary variable for boolean value
+; R6 = length of x[]/n 
+; R7 = possum
+; R8 = oddCount
+; R9 = negCount
+; R10 = 2 (constant)
+; R15 = modulo result
+
+		LOAD R1,i[R0] 		;R1 = i
+		LEA R3,1[R0]		;R3 = 1
+		LOAD R6,n[R0]		;R6 = n
+		LEA R10,2[R0]		;R10 = 2
+
+	;for(i = 0; i < n; i++)	{	
+forloop		CMPLT R5,R1,R6		;R5 = i < n
+		JUMPF R5,done[R0]	;if(i < n) exit loop
+		LOAD R2,x[R1] 		;R2 = x[i]
+
+	;if(x[i] < 0){
+		CMPLT R5,R2,R0		;R5 = x[i] < 0
+		JUMPT R5,else[R0]	;if(x[i] < o, jump to 'else' 
+
+	;possum += x[i]			
+		ADD R7,R7,R2		;possum += x[i]
+
+	;if(x[i]%2 > 0){ oddCount++
+		DIV R11,R2,R10		;R11 = x[i]/2
+		CMPGT R5,R15,R0		;R5 = (x[i]%2) > 0
+		JUMPF R5,increment[R0]	;if (x[i]%2) > 0, jump to increment
+		ADD R8,R8,R3		;OddCount++
+		JUMP increment[R0]	;jump to increment stage
+
+	;negCount++			
+else		ADD R9,R9,R3		;negCount ++
+
+increment 	ADD R1,R1,R3		;i++
+		JUMP forloop[R0]	;Return to start of loop.
+
+done		STORE R7,possum[R0]	;Store final value of possum
+		STORE R8,oddCount[R0]	;Store final value of oddCount
+		STORE R9,negCount[R0]	;Store final value of negCount
+		TRAP R0,R0,R0
+			
+;Variable declaration and initialisation
+
+i		DATA 	0	
+possum		DATA	0
+oddCount	DATA	0
+negCount	DATA	0
+n		DATA	12
+x		DATA	$0003		;3
+		DATA	$fffa		;-6 
+		DATA	$001b 		;27
+		DATA	$0065		;101
+		DATA	$0032		;50
+		DATA	$0000		;0
+		DATA	$ffec		;-20
+		DATA 	$ffeb		;-21
+		DATA	$0013		;19
+		DATA	$0006		;6
+		DATA 	$0004		;4
+		DATA 	$fff6		;-10
